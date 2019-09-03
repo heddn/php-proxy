@@ -5,6 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Debug\Debug;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -28,14 +29,20 @@ class AssetsController extends AbstractController
      */
     public function index(string $asset)
     {
-      Debug::enable();
       $request = $this->client->request('GET', 'https://lmgtfy.com/?q=' . $asset, [
         'buffer' => false,
       ]);
       $headers = $request->getHeaders(false);
       unset($headers['content-encoding'], $headers['set-cookie']);
-      $response = new Response($request->getContent(false), $request->getStatusCode(), $headers);
-      return $response;
+      $streamResponse = new StreamedResponse();
+      $streamResponse->setCallback(function() use ($request) {
+        foreach ($this->client->stream($request) as $chunk) {
+          echo $chunk->getContent();
+        }
+      });
+      $streamResponse->headers = new ResponseHeaderBag($headers);
+      $streamResponse->setStatusCode($request->getStatusCode());
+      return $streamResponse;
     }
 }
 
