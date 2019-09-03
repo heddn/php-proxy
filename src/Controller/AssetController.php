@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class AssetsController extends AbstractController
+class AssetController extends AbstractController
 {
   /**
    * The HTTP client.
