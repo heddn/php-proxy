@@ -32,7 +32,6 @@ class AssetController extends AbstractController
       try {
         $request = $this->client->request('GET', 'https://placekitten.com/' . $asset, [
           'buffer' => false,
-          'timeout' => 2.5,
         ]);
         $headers = $request->getHeaders(false);
         unset($headers['content-encoding'], $headers['set-cookie']);
