@@ -25,7 +25,7 @@ class AssetsController extends AbstractController
   }
 
     /**
-     * @Route("/img/{asset}", name="images", methods={"GET"}, requirements={"asset"=".+"})
+     * @Route("/img/{asset}", name="asset", methods={"GET"}, requirements={"asset"=".+"})
      */
     public function index(string $asset)
     {
