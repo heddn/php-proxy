@@ -33,6 +33,10 @@ class AssetController extends AbstractController
         $request = $this->client->request('GET', 'https://placekitten.com/' . $asset, [
           'buffer' => false,
         ]);
+        // Fail quickly.
+        if ($request->getStatusCode() >= 400) {
+          return new Response('Error', 500);
+        }
         $headers = $request->getHeaders(false);
         unset($headers['content-encoding'], $headers['set-cookie']);
         $streamResponse = new StreamedResponse();
