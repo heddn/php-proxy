@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class AssetController extends AbstractController
@@ -27,20 +29,27 @@ class AssetController extends AbstractController
      */
     public function index(string $asset)
     {
-      $request = $this->client->request('GET', 'https://placekitten.com/' . $asset, [
-        'buffer' => false,
-      ]);
-      $headers = $request->getHeaders(false);
-      unset($headers['content-encoding'], $headers['set-cookie']);
-      $streamResponse = new StreamedResponse();
-      $streamResponse->setCallback(function() use ($request) {
-        foreach ($this->client->stream($request) as $chunk) {
-          echo $chunk->getContent();
-        }
-      });
-      $streamResponse->headers = new ResponseHeaderBag($headers);
-      $streamResponse->setStatusCode($request->getStatusCode());
-      return $streamResponse;
+      try {
+        $request = $this->client->request('GET', 'https://placekitten.com/' . $asset, [
+          'buffer' => false,
+          'timeout' => 2.5,
+        ]);
+        $headers = $request->getHeaders(false);
+        unset($headers['content-encoding'], $headers['set-cookie']);
+        $streamResponse = new StreamedResponse();
+        $streamResponse->setCallback(function() use ($request) {
+          foreach ($this->client->stream($request) as $chunk) {
+            echo $chunk->getContent();
+          }
+        });
+        $streamResponse->headers = new ResponseHeaderBag($headers);
+        $streamResponse->setStatusCode($request->getStatusCode());
+        return $streamResponse;
+      }
+      catch (TransportExceptionInterface $exception) {
+        return new Response($exception->getMessage(), 500);
+      }
+
     }
 }
 
