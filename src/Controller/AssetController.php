@@ -27,7 +27,7 @@ class AssetController extends AbstractController
      */
     public function index(string $asset)
     {
-      $request = $this->client->request('GET', 'https://lmgtfy.com/?q=' . $asset, [
+      $request = $this->client->request('GET', 'https://placekitten.com/' . $asset, [
         'buffer' => false,
       ]);
       $headers = $request->getHeaders(false);
