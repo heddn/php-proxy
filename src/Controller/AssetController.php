@@ -35,7 +35,7 @@ class AssetController extends AbstractController
         ]);
         // Fail quickly.
         if ($request->getStatusCode() >= 400) {
-          return new Response('Error', 500);
+          return new Response('Error', $request->getStatusCode());
         }
         $headers = $request->getHeaders(false);
         unset($headers['content-encoding'], $headers['set-cookie']);
