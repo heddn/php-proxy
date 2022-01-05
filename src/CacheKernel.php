@@ -11,7 +11,7 @@ class CacheKernel extends HttpCache
   /**
    * {@inheritDoc}
    */
-  protected function getOptions()
+  protected function getOptions(): array
   {
     return [
       'default_ttl' => 1800,
